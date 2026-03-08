@@ -1,0 +1,23 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "art-1",
+      "description": "Abstract fuchsia swirls",
+      "imageUrl": "https://picsum.photos/seed/123/400/300",
+      "imageHint": "abstract art"
+    },
+    {
+      "id": "art-2",
+      "description": "Digital landscape",
+      "imageUrl": "https://picsum.photos/seed/456/400/300",
+      "imageHint": "landscape digital"
+    },
+    {
+      "id": "art-3",
+      "description": "Geometric patterns",
+      "imageUrl": "https://picsum.photos/seed/789/400/300",
+      "imageHint": "geometric pattern"
+    }
+  ]
+}
