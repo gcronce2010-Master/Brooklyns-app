@@ -27,6 +27,7 @@ export function DrawingCanvas({
   const [isDrawing, setIsDrawing] = useState(false);
   const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
 
+  // Initialize and handle resizing
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -34,22 +35,28 @@ export function DrawingCanvas({
     const resizeCanvas = () => {
       const parent = canvas.parentElement;
       if (parent) {
-        // Save current content
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
         const tempCtx = tempCanvas.getContext('2d');
-        if (tempCtx) tempCtx.drawImage(canvas, 0, 0);
+        if (tempCtx && canvas.width > 0 && canvas.height > 0) {
+          tempCtx.drawImage(canvas, 0, 0);
+        }
 
-        canvas.width = parent.clientWidth;
-        canvas.height = parent.clientHeight;
+        const newWidth = parent.clientWidth;
+        const newHeight = parent.clientHeight;
 
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.lineCap = brushType === 'square' ? 'square' : 'round';
-          ctx.lineJoin = 'round';
-          // Restore content
-          ctx.drawImage(tempCanvas, 0, 0);
+        if (canvas.width !== newWidth || canvas.height !== newHeight) {
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.lineCap = brushType === 'square' ? 'square' : 'round';
+            ctx.lineJoin = 'round';
+            if (tempCanvas.width > 0 && tempCanvas.height > 0) {
+              ctx.drawImage(tempCanvas, 0, 0);
+            }
+          }
         }
       }
     };
@@ -59,35 +66,35 @@ export function DrawingCanvas({
     return () => window.removeEventListener('resize', resizeCanvas);
   }, [brushType]);
 
-  const getCoordinates = (e: React.MouseEvent | React.TouchEvent | TouchEvent | MouseEvent) => {
+  const getCoordinates = (e: React.PointerEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
-    let clientX, clientY;
-
-    if ('touches' in e) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = (e as React.MouseEvent).clientX;
-      clientY = (e as React.MouseEvent).clientY;
-    }
-
     return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
     };
   };
 
-  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+  const startDrawing = (e: React.PointerEvent) => {
+    // Only allow primary pointer button (left click)
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    
     setIsDrawing(true);
     const coords = getCoordinates(e);
     setLastPos(coords);
+    
+    // Set up initial point for dots/single clicks
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (ctx) {
+      draw(e, true);
+    }
   };
 
-  const draw = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing) return;
+  const draw = (e: React.PointerEvent, isInitial = false) => {
+    if (!isDrawing && !isInitial) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
@@ -131,14 +138,13 @@ export function DrawingCanvas({
     <div className={cn("relative w-full h-full bg-white rounded-xl overflow-hidden cursor-crosshair", className)}>
       <canvas
         ref={canvasRef}
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        onTouchStart={startDrawing}
-        onTouchMove={draw}
-        onTouchEnd={stopDrawing}
+        onPointerDown={startDrawing}
+        onPointerMove={(e) => draw(e)}
+        onPointerUp={stopDrawing}
+        onPointerLeave={stopDrawing}
+        onPointerCancel={stopDrawing}
         className="w-full h-full touch-none"
+        style={{ touchAction: 'none' }}
       />
     </div>
   );
