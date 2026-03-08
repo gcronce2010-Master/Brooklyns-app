@@ -25,7 +25,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 
-export default function CanvasCraftStudio() {
+export default function BrooklynCraftStudio() {
   const [brushColor, setBrushColor] = useState('#E619AF');
   const [brushSize, setBrushSize] = useState(10);
   const [brushOpacity, setBrushOpacity] = useState(100);
@@ -41,7 +41,7 @@ export default function CanvasCraftStudio() {
     if (!canvas) return;
 
     const dataUrl = canvas.toDataURL('image/png');
-    const saved = JSON.parse(localStorage.getItem('canvascraft_art') || '[]');
+    const saved = JSON.parse(localStorage.getItem('brooklyns_craft_art') || '[]');
     const newArt = {
       id: Date.now().toString(),
       name: `Masterpiece ${saved.length + 1}`,
@@ -49,7 +49,7 @@ export default function CanvasCraftStudio() {
       timestamp: Date.now()
     };
     
-    localStorage.setItem('canvascraft_art', JSON.stringify([newArt, ...saved]));
+    localStorage.setItem('brooklyns_craft_art', JSON.stringify([newArt, ...saved]));
     setLastChange(Date.now());
     
     toast({
@@ -63,7 +63,7 @@ export default function CanvasCraftStudio() {
     if (!canvas) return;
     
     const link = document.createElement('a');
-    link.download = `canvascraft-${Date.now()}.png`;
+    link.download = `brooklyns-craft-${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
   };
@@ -78,7 +78,7 @@ export default function CanvasCraftStudio() {
         const file = new File([blob], 'art.png', { type: 'image/png' });
         if (navigator.share) {
           await navigator.share({
-            title: 'My Artwork from CanvasCraft',
+            title: "My Artwork from Brooklyn's Craft Studio",
             files: [file],
           });
         } else {
@@ -126,7 +126,7 @@ export default function CanvasCraftStudio() {
               <BrushIcon className="text-white w-6 h-6" />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-primary">
-              Canvas<span className="text-accent">Craft</span> <span className="text-muted-foreground font-light text-sm hidden sm:inline-block ml-2">Studio</span>
+              Brooklyn's <span className="text-accent">Craft</span> <span className="text-muted-foreground font-light text-sm hidden sm:inline-block ml-2">Studio</span>
             </h1>
           </div>
 

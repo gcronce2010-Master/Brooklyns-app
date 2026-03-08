@@ -3,7 +3,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'CanvasCraft Studio | Playful Digital Art',
+  title: "Brooklyn's Craft Studio | Playful Digital Art",
   description: 'A vibrant and playful digital art studio for creative exploration.',
 };
 

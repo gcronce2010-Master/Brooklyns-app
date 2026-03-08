@@ -25,7 +25,7 @@ export function ArtworkGallery({
   const [artworks, setArtworks] = useState<SavedArt[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('canvascraft_art');
+    const saved = localStorage.getItem('brooklyns_craft_art');
     if (saved) {
       try {
         setArtworks(JSON.parse(saved));
@@ -33,12 +33,12 @@ export function ArtworkGallery({
         console.error("Failed to load saved art", e);
       }
     }
-  }, []);
+  }, [lastChange]);
 
   const deleteArt = (id: string) => {
     const updated = artworks.filter(a => a.id !== id);
     setArtworks(updated);
-    localStorage.setItem('canvascraft_art', JSON.stringify(updated));
+    localStorage.setItem('brooklyns_craft_art', JSON.stringify(updated));
   };
 
   return (
